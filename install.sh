@@ -80,17 +80,9 @@ chmod 700 ~/.gnupg
 chmod -w _config/vlc/vlcrc  # Disables annoying VLC clobbering
 
 get_dpi() {
-    r=$( (xrandr | \
-             grep '\<connected\>' | \
-             head -n 1 | \
-             sed 's/[^0-9]/ /g' | \
-             awk '{printf "%.0f\n", $2 / ($6 * 0.0394)}') \
-           2>/dev/null)
-    if [ -z "$r" ]; then
-        echo 96  # fake it
-    else
-        echo "$r"
-    fi
+    xrandr 2>/dev/null | awk '/connected/ { gsub(/[^0-9]/, " "); \
+        dpi=$2 / ($6 * 0.0394); exit } \
+        END { if (dpi) printf "%.0f\n", dpi; else print 96 }'
 }
 
 ## Reload .Xresources
